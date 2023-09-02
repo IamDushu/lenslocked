@@ -8,6 +8,10 @@
 *.so
 *.dylib
 
+#modd
+modd.conf
+lenslocked
+
 # Test binary, built with `go test -c`
 *.test
 
