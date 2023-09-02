@@ -62,6 +62,6 @@ func main() {
 	var router Router
 
 	fmt.Println("Starting the server on :3000...")
-	http.ListenAndServe(":4000", router)
+	http.ListenAndServe(":3000", router)
 }
   
