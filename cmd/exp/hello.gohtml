@@ -1,11 +1,22 @@
-<h1>Hello, {{.Name}}</h1>
+<h1>
+  Hello,
+  {{if .Name}}
+    {{.Name}}
+  {{- else}}
+    there
+  {{- end}}!
+</h1>
 <p>Bio: {{.Bio}}</p>
 
 <script>
   const user = {
     "name": {{.Name}},
     "bio": {{.Bio}},
-    "age": {{.Age}}
+    "age": {{.Age}},
+    "experience": {{.Experience}},
+    "education": {{.Education}},
+    "likes": {{.Likes}}
+    "friends": {{index .Friends 0}}  //Not sure on how to access the Name of 1st item in array.
   }
   console.log(user)
 </script>
