@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/iamDushu/lenslocked/models"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -42,4 +43,12 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Connected!")
+
+	userService := models.UserService{}
+
+	user, err := userService.Create("dushyanth@gmail.com", "1234")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(user)
 }
