@@ -1,10 +1,10 @@
 {{template "header" .}}
 <div class="py-12 flex justify-center">
   <div class="px-8 py-8 bg-white rounded shadow min-w-[515px]">
+    <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">
+        Start sharing your photos today!
+    </h1>
     <form action="/users" method="post">
-        <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">
-            Start sharing your photos today!
-        </h1>
         <div class="hidden">
             {{csrfField}}
         </div>
