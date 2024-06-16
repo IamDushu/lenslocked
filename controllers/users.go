@@ -62,13 +62,15 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	user, err := u.UserService.Authenticate(data.Email, data.Password)
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Something went wrong.", http.StatusInternalServerError )
+		http.Error(w, "Something went wrong while authenticating.", http.StatusInternalServerError )
 		return
 	}
+
+	// FIXME: When we sign in now; it gives an error as session user_id is UNIQUE
 	session, err := u.SessionService.Create(user.ID) 
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Something went wrong.", http.StatusInternalServerError )
+		http.Error(w, "Something went wrong while session creation.", http.StatusInternalServerError )
 		return
 	}
 	setCookie(w, CookieSession, session.Token)

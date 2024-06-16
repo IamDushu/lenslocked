@@ -38,7 +38,7 @@ func (ss *SessionService) Create (userID int) (*Session, error) {
 	if bytesPerToken < MinBytesPerToken {
 		bytesPerToken = MinBytesPerToken
 	}
-	token, err := rand.String(ss.BytesPerToken)
+	token, err := rand.String(bytesPerToken)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
@@ -47,7 +47,15 @@ func (ss *SessionService) Create (userID int) (*Session, error) {
 		Token: token,
 		TokenHash: ss.hash(token),
 	}
-	// TODO: Store the session in our DB
+
+	row := ss.DB.QueryRow(`
+		INSERT INTO sessions (user_id, token_hash)
+		VALUES ($1, $2) RETURNING id;
+	`, session.UserID, session.TokenHash)
+	err = row.Scan(&session.ID)
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
 	return &session, nil
 } 
 
