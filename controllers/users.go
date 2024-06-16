@@ -66,7 +66,6 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: When we sign in now; it gives an error as session user_id is UNIQUE
 	session, err := u.SessionService.Create(user.ID) 
 	if err != nil {
 		fmt.Println(err)
