@@ -20,3 +20,9 @@ func setCookie(w http.ResponseWriter, name, value string) {
 	cookie := newCookie(name,value)
 	http.SetCookie(w, cookie)
 }
+
+func deleteCookie(w http.ResponseWriter, name string) {
+	cookie := newCookie(name,"")
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
+}
