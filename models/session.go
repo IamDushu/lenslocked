@@ -1,7 +1,9 @@
 package models
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/iamDushu/lenslocked/rand"
@@ -40,11 +42,10 @@ func (ss *SessionService) Create (userID int) (*Session, error) {
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
-	// TODO: Hash the session token
 	session := Session {
 		UserID: userID,
 		Token: token,
-		// TODO: Set the TokenHash
+		TokenHash: ss.hash(token),
 	}
 	// TODO: Store the session in our DB
 	return &session, nil
@@ -54,3 +55,8 @@ func (ss *SessionService) User (token string) (*User, error) {
 	// TODO: Implement SessionService.User
 	return nil, nil
 } 
+
+func (ss *SessionService) hash(token string) string {
+	tokenHash := sha256.Sum256([]byte(token))
+	return base64.URLEncoding.EncodeToString(tokenHash[:])
+}
