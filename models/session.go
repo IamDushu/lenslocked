@@ -7,9 +7,14 @@ import (
 	"github.com/iamDushu/lenslocked/rand"
 )
 
+const (
+	// The minimum no.of bytes to be used for each session token.
+	MinBytesPerToken = 32
+)
+
 type Session struct {
 	ID 			int
-	UserID 		uint
+	UserID 		int
 	// Token is only set when creating a new session. When look up a session
 	// this will be left empty, as we only store the hash of a session token
 	// in our database and we cannot reverse it into a raw token.
@@ -19,10 +24,19 @@ type Session struct {
 
 type SessionService struct {
 	DB *sql.DB
+	// BytesPerToken is used to determine how many bytes to use when generating
+	// each session token. If this value is not set or is less than the 
+	// MinBytesPerToken const it will be ignored and MinBytesPerToken will be
+	// used.
+	BytesPerToken int
 }
 
-func (ss *SessionService) Create (userID uint) (*Session, error) {
-	token, err := rand.SessionToken()
+func (ss *SessionService) Create (userID int) (*Session, error) {
+	bytesPerToken := ss.BytesPerToken
+	if bytesPerToken < MinBytesPerToken {
+		bytesPerToken = MinBytesPerToken
+	}
+	token, err := rand.String(ss.BytesPerToken)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
