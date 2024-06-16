@@ -16,7 +16,7 @@ type SessionService struct {
 	DB *sql.DB
 }
 
-func (ss *SessionService) Create (userID int) (*Session, error) {
+func (ss *SessionService) Create (userID uint) (*Session, error) {
 	// TODO: Create session token
 	// TODO: Implement SessionService.Create
 	return nil, nil
