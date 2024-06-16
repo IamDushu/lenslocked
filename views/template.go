@@ -8,6 +8,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/csrf"
 )
 
 func Must(t Template, err error) Template {
@@ -54,9 +56,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 	}
 	tpl = tpl.Funcs(
 		template.FuncMap{
-			// "csrfField": func() template.HTML {
-			// 	return csrf.TemplateField(r)
-			// },
+			"csrfField": func() template.HTML {
+				return csrf.TemplateField(r)
+			},
 		},
 	)
 
