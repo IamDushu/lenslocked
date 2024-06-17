@@ -25,6 +25,8 @@ func main() {
 		views.Must(views.ParseFS(templates.FS, "faq.gohtml", "tailwind.gohtml"))))
 
 	cfg := models.DefaultPostgresConfig()
+	// fmt.Println(cfg.String())
+	// host=localhost port=5432 user=baloo password=junglebook dbname=lenslocked sslmode=disable
 	db, err := models.Open(cfg)
 	if err != nil {
 		panic(err)
