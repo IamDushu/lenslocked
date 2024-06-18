@@ -86,18 +86,6 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "Current user: %s\n", user.Email)
-	// tokenCookie, err := r.Cookie(CookieSession)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	http.Redirect(w, r, "/signin", http.StatusFound)
-	// 	return
-	// }
-	// user, err := u.SessionService.User(tokenCookie.Value)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	http.Redirect(w, r, "/signin", http.StatusFound)
-	// 	return
-	// }
 }
 
 func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
@@ -115,4 +103,29 @@ func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 	deleteCookie(w, CookieSession)
 	http.Redirect(w, r, "/signin", http.StatusFound)
+}
+
+type UserMiddleware struct {
+	SessionService *models.SessionService
+}
+
+func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenCookie, err := r.Cookie(CookieSession)
+		if err != nil {
+			// proceed assuming theres no cookie; and users not logged in
+			next.ServeHTTP(w, r)
+			return
+		}
+		user, err := umw.SessionService.User(tokenCookie.Value)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+		//now that we have user; let's set user in context
+		ctx := r.Context()
+		ctx = context.WithUser(ctx, user)
+		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+	})
 }
