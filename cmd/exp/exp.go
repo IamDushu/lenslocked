@@ -1,34 +1,21 @@
 package main
 
 import (
+	stdctx "context"
 	"fmt"
 
+	"github.com/iamDushu/lenslocked/context"
 	"github.com/iamDushu/lenslocked/models"
 )
 
 func main() {
+	ctx := stdctx.Background()
 
-	cfg := models.DefaultPostgresConfig()
-
-	db, err := models.Open(cfg)
-	if err != nil {
-		panic(err)
+	user := models.User {
+		Email: "dushyanth@gmail.com",
 	}
-	defer db.Close()
+	ctx = context.WithUser(ctx, &user)
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Connected!")
-
-	userService := models.UserService{
-		DB: db,
-	}
-
-	user, err := userService.Create("dushyanth1@gmail.com", "1234")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(user)
+	retrivedUser := context.User(ctx)
+	fmt.Println(retrivedUser.Email)
 }
