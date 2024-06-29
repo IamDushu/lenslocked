@@ -23,3 +23,6 @@ lenslocked
 
 # Go workspace file
 go.work
+
+# Env variables
+.env
