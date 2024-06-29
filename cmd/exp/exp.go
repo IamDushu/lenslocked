@@ -3,38 +3,39 @@ package main
 import (
 	"fmt"
 
-	"github.com/go-mail/mail/v2"
+	"github.com/iamDushu/lenslocked/models"
 )
 
 const (
-	host = "sandbox.smtp.mailtrap.io"
-	port = 2525
+	host     = "sandbox.smtp.mailtrap.io"
+	port     = 2525
 	username = "d9b65401f343a1"
 	password = "78f05ab331b756"
 )
 
 func main() {
-	from := "test@lenslocked.com"
-	to := "hey.dushyanth@gmail.com"
-	subject := "This is a test email"
-	plainText := "Hello, This is the body of the email"
-	html := `<h1>Hello there buddy!</h1> <p>This is the email; Hope you enjoy it</p>`
-
-	msg := mail.NewMessage()
-	msg.SetHeader("To", to)
-	msg.SetHeader("From", from)
-	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/plain", plainText)
-	msg.AddAlternative("text/html", html)
-	// msg.WriteTo(os.Stdout)
-
-    dailer := mail.NewDialer(host, port, username, password)
-
-	err := dailer.DialAndSend(msg)
-	if err != nil {
-			panic(err)
+	email := models.Email{
+		From:      "test@lenslocked.com",
+		To:        "hey.dushyanth@gmail.com",
+		Subject:   "This is a test email",
+		Plaintext: "Hello, This is the body of the email",
+		HTML:      `<h1>Hello there buddy!</h1> <p>This is the email; Hope you enjoy it</p>`,
 	}
-	fmt.Println("message sent")
+
+	smtpConf := models.SMTPConfig{
+		Host:     host,
+		Port:     port,
+		Username: username,
+		Password: password,
+	}
+
+	es := models.NewEmailService(smtpConf)
+	err := es.Send(email)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Email sent")
 
 	//If we want to send multiple emails we can use dialer.Dial
 	// sender, err := dailer.Dial()
