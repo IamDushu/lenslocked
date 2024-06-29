@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Setup middleware
-	umw := controllers.UserMiddleware {
+	umw := controllers.UserMiddleware{
 		SessionService: &sessionService,
 	}
 	csrfKey := "gFvi45R4fy5xNBLneeZTQBfavcYEIAUX"
@@ -47,11 +47,12 @@ func main() {
 
 	// Setup controllers
 	usersC := controllers.Users{
-		UserService: &userService, 
+		UserService:    &userService,
 		SessionService: &sessionService,
 	}
 	usersC.Templates.New = views.Must(views.ParseFS(templates.FS, "signup.gohtml", "tailwind.gohtml"))
 	usersC.Templates.SignIn = views.Must(views.ParseFS(templates.FS, "signin.gohtml", "tailwind.gohtml"))
+	usersC.Templates.ForgotPassword = views.Must(views.ParseFS(templates.FS, "forgot-pw.gohtml", "tailwind.gohtml"))
 
 	// Setup Router and routes
 	r := chi.NewRouter()
@@ -71,6 +72,8 @@ func main() {
 	r.Post("/users", usersC.Create)
 	r.Post("/signin", usersC.ProcessSignIn)
 	r.Post("/signout", usersC.ProcessSignOut)
+	r.Get("/forgot-pw", usersC.ForgotPassword)
+	r.Post("/forgot-pw", usersC.ProcessForgotPassword)
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(umw.RequireUser)
 		r.Get("/", usersC.CurrentUser)
