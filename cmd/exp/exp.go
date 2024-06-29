@@ -1,9 +1,16 @@
 package main
 
 import (
-	"os"
+	"fmt"
 
 	"github.com/go-mail/mail/v2"
+)
+
+const (
+	host = "sandbox.smtp.mailtrap.io"
+	port = 2525
+	username = "d9b65401f343a1"
+	password = "78f05ab331b756"
 )
 
 func main() {
@@ -19,26 +26,22 @@ func main() {
 	msg.SetHeader("Subject", subject)
 	msg.SetBody("text/plain", plainText)
 	msg.AddAlternative("text/html", html)
+	// msg.WriteTo(os.Stdout)
 
-	msg.WriteTo(os.Stdout)
+    dailer := mail.NewDialer(host, port, username, password)
+
+	err := dailer.DialAndSend(msg)
+	if err != nil {
+			panic(err)
+	}
+	fmt.Println("message sent")
+
+	//If we want to send multiple emails we can use dialer.Dial
+	// sender, err := dailer.Dial()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer sender.Close()
+	// sender.Send(from, []string{to}, msg)
+	// sender.Send(from, []string{to}, msg)
 }
-
-// MIME-Version: 1.0
-// Date: Sat, 29 Jun 2024 15:08:41 +0530
-// To: hey.dushyanth@gmail.com
-// From: test@lenslocked.com
-// Subject: This is a test email
-// Content-Type: multipart/alternative;
-//  boundary=c1ef3f377cb6ed61bd8e00fe2b8ad70ace16cf3a5881e6a6d40c55e915bb
-
-// --c1ef3f377cb6ed61bd8e00fe2b8ad70ace16cf3a5881e6a6d40c55e915bb
-// Content-Transfer-Encoding: quoted-printable
-// Content-Type: text/plain; charset=UTF-8
-
-// Hello, This is the body of the email
-// --c1ef3f377cb6ed61bd8e00fe2b8ad70ace16cf3a5881e6a6d40c55e915bb
-// Content-Transfer-Encoding: quoted-printable
-// Content-Type: text/html; charset=UTF-8
-
-// <h1>Hello there buddy!</h1> <p>This is the email; Hope you enjoy it</p>
-// --c1ef3f377cb6ed61bd8e00fe2b8ad70ace16cf3a5881e6a6d40c55e915bb--
