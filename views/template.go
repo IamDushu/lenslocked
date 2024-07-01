@@ -32,11 +32,7 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 				return "", fmt.Errorf("currentUser not implemented")
 			},
 			"errors": func() []string {
-				return []string{
-					"Don't do that!",
-					"The email address you provided is already associated with an account.",
-					"Something went wrong.",
-				}
+				return nil
 			},
 		},
 	)
@@ -59,7 +55,7 @@ type Template struct {
 	htmlTpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, errs ...error) {
 	tpl, err := t.htmlTpl.Clone() //It returns an error if t has already been executed. Preventing Race condition.
 	if err != nil {
 		log.Printf("cloning template: %+v", err)
@@ -74,6 +70,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			"currentUser": func() *models.User {
 				ctx := r.Context()
 				return context.User(ctx)
+			},
+			"errors": func() []string {
+				var errMessages []string
+				for _, err := range errs {
+					errMessages = append(errMessages, err.Error())
+				}
+				return errMessages
 			},
 		},
 	)
