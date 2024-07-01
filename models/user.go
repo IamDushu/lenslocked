@@ -11,12 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ErrEmailTaken    = errors.New("models: email address is already in use")
-	ErrWrongPassword = errors.New("models: wrong password given as input")
-	ErrUserNotExist  = errors.New("models: user with that email address doesn't exist")
-)
-
 type User struct {
 	ID           int
 	Email        string
