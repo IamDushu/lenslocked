@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/iamDushu/lenslocked/context"
+	"github.com/iamDushu/lenslocked/errors"
 	"github.com/iamDushu/lenslocked/models"
 )
 
@@ -40,6 +41,9 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	data.Password = r.FormValue("password")
 	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
+		if errors.Is(err, models.ErrEmailTaken) {
+			err = errors.Public(err, "That email address is already associated with an account.")
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
@@ -71,8 +75,10 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	data.Password = r.FormValue("password")
 	user, err := u.UserService.Authenticate(data.Email, data.Password)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Something went wrong while authenticating.", http.StatusInternalServerError)
+		if errors.Is(err, models.ErrWrongPassword) {
+			err = errors.Public(err, "You've entered a wrong password.")
+		}
+		u.Templates.SignIn.Execute(w, r, data, err)
 		return
 	}
 
@@ -125,9 +131,10 @@ func (u Users) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
 	data.Email = r.FormValue("email")
 	pwReset, err := u.PasswordResetService.Create(data.Email)
 	if err != nil {
-		// TODO: Handle other cases in the future. For instance, if a user does not exist with that email address.
-		fmt.Println(err)
-		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		if errors.Is(err, models.ErrUserNotExist) {
+			err = errors.Public(err, "There is no user with that email address.")
+		}
+		u.Templates.ForgotPassword.Execute(w, r, data, err)
 		return
 	}
 	vals := url.Values{

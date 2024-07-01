@@ -12,7 +12,9 @@ import (
 )
 
 var (
-	ErrEmailTaken = errors.New("models: email address is already in use")
+	ErrEmailTaken    = errors.New("models: email address is already in use")
+	ErrWrongPassword = errors.New("models: wrong password given as input")
+	ErrUserNotExist  = errors.New("models: user with that email address doesn't exist")
 )
 
 type User struct {
@@ -71,7 +73,7 @@ func (us *UserService) Authenticate(email, password string) (*User, error) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return nil, fmt.Errorf("authenticate: %w", err)
+		return nil, ErrWrongPassword
 	}
 	return &user, nil
 }

@@ -45,8 +45,7 @@ func (service *PasswordResetService) Create(email string) (*PasswordReset, error
 	 SELECT id FROM users WHERE email = $1;`, email)
 	err := row.Scan(&userID)
 	if err != nil {
-		// TODO: Consider returning a specific error when the user does not exist.
-		return nil, fmt.Errorf("create: %w", err)
+		return nil, ErrUserNotExist
 	}
 
 	// Build the Password Reset
