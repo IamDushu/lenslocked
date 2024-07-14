@@ -12,6 +12,9 @@
 modd.conf
 lenslocked
 
+#Images directory during development
+images/
+
 # Test binary, built with `go test -c`
 *.test
 
