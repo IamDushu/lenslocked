@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -162,7 +163,7 @@ func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g Galleries) Image(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "filename")
+	filename := g.filename(w, r)
 	galleryID, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "Invalid gallery Id", http.StatusFound)
@@ -181,7 +182,7 @@ func (g Galleries) Image(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
-	filename := chi.URLParam(r, "filename")
+	filename := g.filename(w, r)
 	gallery, err := g.galleryByID(w, r, userMustOwnGallery)
 	if err != nil {
 		return
@@ -193,6 +194,12 @@ func (g Galleries) DeleteImage(w http.ResponseWriter, r *http.Request) {
 	}
 	editPath := fmt.Sprintf("/galleries/%d/edit", gallery.ID)
 	http.Redirect(w, r, editPath, http.StatusFound)
+}
+
+func (g Galleries) filename(_ http.ResponseWriter, r *http.Request) string {
+	filename := chi.URLParam(r, "filename")
+	filename = filepath.Base(filename)
+	return filename
 }
 
 type galleryOpt func(http.ResponseWriter, *http.Request, *models.Gallery) error
